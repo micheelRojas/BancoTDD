@@ -25,9 +25,9 @@ namespace BancoTDD.Dominio.Test.CuentaAhorro
         [Test]
         public void NoPuedeConsignarValorDeMenosUno()
         {
-            var cuentaAhorro = new CuentaAhorro(numero: "10001", nombre: "Cuenta Ejemplo");
+            var cuentaAhorro = new CuentaAhorro(numero: "10001", nombre: "Cuenta Ejemplo", ciudad: "Bogota");
             decimal valorConsignacion = -1;
-            string respuesta = cuentaAhorro.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1), tipoRecaudo: "Local Nacional");
+            string respuesta = cuentaAhorro.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1), ciudad: "Bogota");
             Assert.AreEqual("El valor a consignar es incorrecto", respuesta);
         }
       
@@ -49,9 +49,9 @@ namespace BancoTDD.Dominio.Test.CuentaAhorro
         [Test]
         public void PuedeHacerConsignacionInicialCorrecta()
         {
-            var cuentaAhorro = new CuentaAhorro(numero: "10001", nombre: "Cuenta Ejemplo");
+            var cuentaAhorro = new CuentaAhorro(numero: "10001", nombre: "Cuenta Ejemplo", ciudad: "Bogota");
             decimal valorConsignacion = 50000;
-            string respuesta = cuentaAhorro.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1), tipoRecaudo: "Local Nacional");
+            string respuesta = cuentaAhorro.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1), ciudad: "Bogota");
             Assert.AreEqual(1, cuentaAhorro.Movimientos.Count);//Criterio general
             Assert.AreEqual("Su Nuevo Saldo es de $ 50.000,00 pesos m/c", respuesta);
         }
@@ -72,9 +72,9 @@ namespace BancoTDD.Dominio.Test.CuentaAhorro
         [Test]
         public void PuedeHacerConsignacionInicialInCorrecta()
         {
-            var cuentaAhorro = new CuentaAhorro(numero: "10001", nombre: "Cuenta Ejemplo");
+            var cuentaAhorro = new CuentaAhorro(numero: "10001", nombre: "Cuenta Ejemplo", ciudad: "Bogota");
             decimal valorConsignacion = 49950;
-            string respuesta = cuentaAhorro.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1), tipoRecaudo: "Local Nacional");
+            string respuesta = cuentaAhorro.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1), ciudad: "Bogota");
             Assert.AreEqual(0, cuentaAhorro.Movimientos.Count);//Criterio general
             Assert.AreEqual("El valor mínimo de la primera consignación debe ser de $50.000 mil pesos. Su nuevo saldo es $0 pesos", respuesta);
         }
@@ -93,11 +93,13 @@ namespace BancoTDD.Dominio.Test.CuentaAhorro
         [Test]
         public void PuedeHacerConsignacionPosterioraInicialCorrecta()
         {
-            var cuentaAhorro = new CuentaAhorro(numero: "10001", nombre: "Cuenta Ejemplo");
+            var cuentaAhorro = new CuentaAhorro(numero: "10001", nombre: "Cuenta Ejemplo", ciudad: "Bogota");
+            cuentaAhorro.Consignar(valorConsignacion: 50000, fecha: new DateTime(2019, 2, 1), ciudad: "Bogota");
+            cuentaAhorro.Retirar(valorRetirar: 20000, fecha: new DateTime(2019, 2, 1), ciudad: "Bogota");
             decimal valorConsignacion = 49950;
-            cuentaAhorro.Consignar(valorConsignacion: 50000, fecha: new DateTime(2019, 2, 1), tipoRecaudo: "Local Nacional");
-            string respuesta = cuentaAhorro.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1), tipoRecaudo: "Local Nacional");
-            Assert.AreEqual(2, cuentaAhorro.Movimientos.Count);//Criterio general
+            string respuesta = cuentaAhorro.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1), ciudad: "Bogota");
+            
+            Assert.AreEqual(3, cuentaAhorro.Movimientos.Count);//Criterio general
             Assert.AreEqual("Su Nuevo Saldo es de $ 79.950,00 pesos m/c", respuesta);
         }
         /*
@@ -117,11 +119,13 @@ namespace BancoTDD.Dominio.Test.CuentaAhorro
         [Test]
         public void PuedeHacerConsignacionPosterioraInicialCorrectaNacional()
         {
-            var cuentaAhorro = new CuentaAhorro(numero: "10001", nombre: "Cuenta Ejemplo");
+            var cuentaAhorro = new CuentaAhorro(numero: "10001", nombre: "Cuenta Ejemplo", ciudad:"Bogota");
+            cuentaAhorro.Consignar(valorConsignacion: 50000, fecha: new DateTime(2019, 2, 1), ciudad: "Bogota");
+            cuentaAhorro.Retirar(valorRetirar: 20000, fecha: new DateTime(2019, 2, 1), ciudad: "Bogota");
             decimal valorConsignacion = 49950;
-            cuentaAhorro.Consignar(valorConsignacion: 50000, fecha: new DateTime(2019, 2, 1), tipoRecaudo: "Local Nacional");
-            string respuesta = cuentaAhorro.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1), tipoRecaudo: "Nacional");
-            Assert.AreEqual(2, cuentaAhorro.Movimientos.Count);//Criterio general
+            string respuesta = cuentaAhorro.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1), ciudad: "Valledupar");
+           
+            Assert.AreEqual(3, cuentaAhorro.Movimientos.Count);//Criterio general
             Assert.AreEqual("Su Nuevo Saldo es de $ 69.950,00 pesos m/c", respuesta);
         }
     }
@@ -131,69 +135,82 @@ namespace BancoTDD.Dominio.Test.CuentaAhorro
         public string Numero { get; private set; }//encapsulamiento // guardar la integridad
         public string Nombre { get; private set; }
         public decimal Saldo { get; private set; }
+        public string Ciudad { get; private set; }
 
         private List<Movimiento> _movimientos;
 
         public IReadOnlyCollection<Movimiento> Movimientos => _movimientos.AsReadOnly();
 
-        public CuentaAhorro(string numero, string nombre)
+        public CuentaAhorro(string numero, string nombre, string ciudad)
         {
             Numero = numero;
             Nombre = nombre;
+            Ciudad = ciudad;
             _movimientos = new List<Movimiento>();
         }
 
-        internal string Consignar(decimal valorConsignacion, DateTime fecha, string tipoRecaudo)
+        internal string Consignar(decimal valorConsignacion, DateTime fecha, string ciudad)
         {
             if (valorConsignacion < 0)
             {
                 return "El valor a consignar es incorrecto";
             }
-            if (!_movimientos.Any() && valorConsignacion >= 50000 && tipoRecaudo.Equals("Local Nacional"))
+            if (!_movimientos.Any() && valorConsignacion >= 50000 && Ciudad.Equals(ciudad))
             {
-                _movimientos.Add(new Movimiento(cuentaAhorro: this, fecha: fecha, tipo: "CONSIGNACION", valor: valorConsignacion, tipoRecaudo: tipoRecaudo));
+                _movimientos.Add(new Movimiento(cuentaAhorro: this, fecha: fecha, tipo: "CONSIGNACION", valor: valorConsignacion));
                 Saldo += valorConsignacion;
 
                 return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
             }
-            if (!_movimientos.Any() && valorConsignacion < 50000 && tipoRecaudo.Equals("Local Nacional")) {
+            if (!_movimientos.Any() && valorConsignacion < 50000 && Ciudad.Equals(ciudad)) {
                 return "El valor mínimo de la primera consignación debe ser de $50.000 mil pesos. Su nuevo saldo es $0 pesos";
             }
-            if (_movimientos.Any() && tipoRecaudo.Equals("Local Nacional"))
+            if (_movimientos.Any() && Ciudad.Equals(ciudad))
             {
-                Saldo = 30000;
-                _movimientos.Add(new Movimiento(cuentaAhorro: this, fecha: fecha, tipo: "CONSIGNACION", valor: valorConsignacion, tipoRecaudo: tipoRecaudo));
+                
+                _movimientos.Add(new Movimiento(cuentaAhorro: this, fecha: fecha, tipo: "CONSIGNACION", valor: valorConsignacion));
                 Saldo += valorConsignacion;
                 return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
             }
-            if (_movimientos.Any() && tipoRecaudo.Equals("Nacional"))
+            if (_movimientos.Any() && !Ciudad.Equals(ciudad))
             {
                 decimal costoNacional = 10000;
-                Saldo = 30000;
-                _movimientos.Add(new Movimiento(cuentaAhorro: this, fecha: fecha, tipo: "CONSIGNACION", valor: valorConsignacion, tipoRecaudo: tipoRecaudo));
+               
+                _movimientos.Add(new Movimiento(cuentaAhorro: this, fecha: fecha, tipo: "CONSIGNACION", valor: valorConsignacion));
                 Saldo += (valorConsignacion-costoNacional);
                 return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
             }
             throw new NotImplementedException();
         }
+        internal string Retirar(decimal valorRetirar, DateTime fecha, string ciudad)
+        {
+            if (valorRetirar < 0)
+            {
+                return "El valor a retirar es incorrecto";
+            }
+           
+                _movimientos.Add(new Movimiento(cuentaAhorro: this, fecha: fecha, tipo: "RETIRO", valor: valorRetirar));
+                Saldo -= valorRetirar;
+                return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
+
+        }
     }
 
     internal class Movimiento
     {
-        public Movimiento(CuentaAhorro cuentaAhorro, DateTime fecha, string tipo, decimal valor, string tipoRecaudo)
+        public Movimiento(CuentaAhorro cuentaAhorro, DateTime fecha, string tipo, decimal valor)
         {
             CuentaAhorro = cuentaAhorro;
             Fecha = fecha;
             Tipo = tipo;
             Valor = valor;
-            TipoRecaudo = tipoRecaudo;
         }
 
         public CuentaAhorro CuentaAhorro { get; private set; }
         public DateTime Fecha { get; private set; }
         public string Tipo { get; private set; }
         public decimal Valor { get; private set; }
-        public string TipoRecaudo { get; private set; }
+      
     }
 
 }
