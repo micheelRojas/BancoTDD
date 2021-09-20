@@ -95,7 +95,7 @@ namespace BancoTDD.Dominio.Test.CDTs
             if (valorConsignacion < 1000000) {
                 return "Error, la consignacion minima debe ser de $1.000.000,00 pesos m/c";
             }
-            if (!_movimientos.Any() || MovimientoAnterior(this._movimientos)==null) {
+            if (!_movimientos.Any() || MovimientoAnteriorConsignacion(this._movimientos)==null) {
                 _movimientos.Add(new Movimiento(cdt: this, fecha: fecha, tipo: "CONSIGNACION", valor: valorConsignacion));
                 Saldo += valorConsignacion;
                 return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
@@ -107,7 +107,7 @@ namespace BancoTDD.Dominio.Test.CDTs
         internal string Retirar(decimal valorRetiro, DateTime fecha)
         {
             decimal SaldoTemporal= (Convert.ToDecimal(CalcularTermino(this.Termino, this.Tasa)) + 1) * Saldo;
-            if (DifenciaMeses(fecha, MovimientoAnterior(this._movimientos).Fecha) == this.Termino && valorRetiro<= SaldoTemporal)
+            if (DifenciaMeses(fecha, MovimientoAnteriorConsignacion(this._movimientos).Fecha) == this.Termino && valorRetiro<= SaldoTemporal && MovimientoAnteriorRetiro(this._movimientos) == null)
             {
                 _movimientos.Add(new Movimiento(cdt: this, fecha: fecha, tipo: "RETIRO", valor: valorRetiro));
                 Saldo = SaldoTemporal-valorRetiro;
@@ -135,7 +135,7 @@ namespace BancoTDD.Dominio.Test.CDTs
             }
                 return " " ;
         }
-        internal Movimiento MovimientoAnterior(List<Movimiento> movimiento)
+        internal Movimiento MovimientoAnteriorConsignacion(List<Movimiento> movimiento)
         {
             Movimiento ultimoMovimiento=null;
 
@@ -146,6 +146,18 @@ namespace BancoTDD.Dominio.Test.CDTs
             }
             return ultimoMovimiento;
         }
+        internal Movimiento MovimientoAnteriorRetiro(List<Movimiento> movimiento)
+        {
+            Movimiento ultimoMovimiento = null;
+
+            for (int i = 0; i < movimiento.LongCount(); i++)
+            {
+                if (movimiento[i].Tipo.Equals("RETIRO"))
+                    ultimoMovimiento = movimiento[i];
+            }
+            return ultimoMovimiento;
+        }
+
 
         internal double CalcularTermino(string termino, double tasa) {
             double Te=0.0;
