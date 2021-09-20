@@ -2,8 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
-namespace BancoTDD.Dominio.Test.CuentaAhorro
+namespace BancoTDD.Dominio.Test.CuentasAhorro
 {
     public class CuentadeAhorroTest
     {
@@ -95,7 +94,7 @@ namespace BancoTDD.Dominio.Test.CuentaAhorro
         {
             var cuentaAhorro = new CuentaAhorro(numero: "10001", nombre: "Cuenta Ejemplo", ciudad: "Bogota");
             cuentaAhorro.Consignar(valorConsignacion: 50000, fecha: new DateTime(2019, 2, 1), ciudad: "Bogota");
-            cuentaAhorro.Retirar(valorRetirar: 20000, fecha: new DateTime(2019, 2, 1), ciudad: "Bogota");
+            cuentaAhorro.Retirar(valorRetirar: 20000, fecha: new DateTime(2019, 2, 1));
             decimal valorConsignacion = 49950;
             string respuesta = cuentaAhorro.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1), ciudad: "Bogota");
             
@@ -121,96 +120,100 @@ namespace BancoTDD.Dominio.Test.CuentaAhorro
         {
             var cuentaAhorro = new CuentaAhorro(numero: "10001", nombre: "Cuenta Ejemplo", ciudad:"Bogota");
             cuentaAhorro.Consignar(valorConsignacion: 50000, fecha: new DateTime(2019, 2, 1), ciudad: "Bogota");
-            cuentaAhorro.Retirar(valorRetirar: 20000, fecha: new DateTime(2019, 2, 1), ciudad: "Bogota");
+            cuentaAhorro.Retirar(valorRetirar: 20000, fecha: new DateTime(2019, 2, 1));
             decimal valorConsignacion = 49950;
             string respuesta = cuentaAhorro.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1), ciudad: "Valledupar");
            
             Assert.AreEqual(3, cuentaAhorro.Movimientos.Count);//Criterio general
             Assert.AreEqual("Su Nuevo Saldo es de $ 69.950,00 pesos m/c", respuesta);
         }
+        /*
+         * HU 2.
+            Como Usuario quiero realizar retiros a una cuenta de ahorro para obtener el dinero en efectivo
+            Criterios de Aceptación
+            2.1 El valor a retirar se debe descontar del saldo de la cuenta.
+            2.2 El saldo mínimo de la cuenta deberá ser de 20 mil pesos.
+            2.3 Los primeros 3 retiros del mes no tendrán costo.
+            2.4 Del cuarto retiro en adelante del mes tendrán un valor de 5 mil pesos.
+
+         */
+
+        /*
+         *        Criterio de Aceptación:
+         *        2.1 El valor a retirar se debe descontar del saldo de la cuenta.
+                  2.2 El saldo mínimo de la cuenta deberá ser de 20 mil pesos.
+                  2.3 Los primeros 3 retiros del mes no tendrán costo.
+            Dado El cliente tiene una cuenta de ahorro con un saldo de 50.000 perteneciente a una
+            sucursal de la ciudad de Bogotá y se realiza un retiro.
+            Cuando Va a retirat  el valor de $20.000,00 pesos.
+            Entonces El sistema registrará el retiro restando el valor del retiro al saldo.
+            AND presentará el mensaje. “Su Nuevo Saldo es de $30.000,00 pesos m/c”.
+         */
+        [Test]
+        public void PuedeHacerRetiroCorrecto()
+        {
+            var cuentaAhorro = new CuentaAhorro(numero: "10001", nombre: "Cuenta Ejemplo", ciudad: "Bogota");
+            cuentaAhorro.Consignar(valorConsignacion: 50000, fecha: new DateTime(2019, 2, 1), ciudad: "Bogota");
+            
+            decimal valorRetirar = 20000;
+            string respuesta = cuentaAhorro.Retirar(valorRetirar: valorRetirar, fecha: new DateTime(2019, 2, 1));
+
+            Assert.AreEqual(2, cuentaAhorro.Movimientos.Count);//Criterio general
+            Assert.AreEqual("Su Nuevo Saldo es de $ 30.000,00 pesos m/c", respuesta);
+        }
+        /*
+        *        Criterio de Aceptación:
+        *        2.1 El valor a retirar se debe descontar del saldo de la cuenta.
+                 2.2 El saldo mínimo de la cuenta deberá ser de 20 mil pesos.
+           Dado El cliente tiene una cuenta de ahorro con un saldo de 19.950 perteneciente a una
+           sucursal de la ciudad de Bogotá y se realiza un retiro.
+           Cuando Va a retirat  el valor de $19.000,00 pesos.
+           Entonces El sistema  no registrará el retiro.
+           AND presentará el mensaje. “El Saldo de la cuenta es inferior a $20.000,00 m/c”.
+        */
+        [Test]
+        public void PuedeHacerRetiroInCorrecto()
+        {
+            var cuentaAhorro = new CuentaAhorro(numero: "10001", nombre: "Cuenta Ejemplo", ciudad: "Bogota");
+            cuentaAhorro.Consignar(valorConsignacion: 50000, fecha: new DateTime(2019, 2, 1), ciudad: "Bogota");
+            cuentaAhorro.Retirar(valorRetirar: 30050, fecha: new DateTime(2019, 2, 1));
+
+            decimal valorRetirar = 19000;
+            string respuesta = cuentaAhorro.Retirar(valorRetirar: valorRetirar, fecha: new DateTime(2019, 2, 1));
+
+            Assert.AreEqual(2, cuentaAhorro.Movimientos.Count);//Criterio general
+            Assert.AreEqual("El Saldo de la cuenta es inferior a $20.000,00 m/c", respuesta);
+        }
+
+
+        /* 2.1 El valor a retirar se debe descontar del saldo de la cuenta.
+            2.2 El saldo mínimo de la cuenta deberá ser de 20 mil pesos.
+         *  2.4 Del cuarto retiro en adelante del mes tendrán un valor de 5 mil pesos.
+         *   Dado El cliente tiene una cuenta de ahorro con un saldo de 50.000 perteneciente a una
+           sucursal de la ciudad de Bogotá y se realiza un retiro.
+           Cuando Va a retirat  el valor de $20.000,00 pesos por cuarta ves.
+           Entonces El sistema  registrará el retiro restando el valor del retiro al saldo menos los 5000 pesos.
+           AND presentará el mensaje. “Su Nuevo Saldo es de $25.000,00 pesos m/c”.
+       
+         */
+        [Test]
+        public void PuedeHacerRetiroCuartoRetirodelMesCorrecto()
+        {
+            var cuentaAhorro = new CuentaAhorro(numero: "10001", nombre: "Cuenta Ejemplo", ciudad: "Bogota");
+            cuentaAhorro.Consignar(valorConsignacion: 100000, fecha: new DateTime(2019, 2, 1), ciudad: "Bogota");
+            cuentaAhorro.Retirar(valorRetirar: 20000, fecha: new DateTime(2019, 2, 1));
+            cuentaAhorro.Retirar(valorRetirar: 15000, fecha: new DateTime(2019, 2, 1));
+            cuentaAhorro.Retirar(valorRetirar: 15000, fecha: new DateTime(2019, 2, 1));
+
+            decimal valorRetirar = 20000;
+            string respuesta = cuentaAhorro.Retirar(valorRetirar: valorRetirar, fecha: new DateTime(2019, 2, 1));
+
+            Assert.AreEqual(5, cuentaAhorro.Movimientos.Count);//Criterio general
+            Assert.AreEqual("Su Nuevo Saldo es de $ 25.000,00 pesos m/c", respuesta);
+        }
+
+
     }
-    //Agregado
-    internal class CuentaAhorro
-    {
-        public string Numero { get; private set; }//encapsulamiento // guardar la integridad
-        public string Nombre { get; private set; }
-        public decimal Saldo { get; private set; }
-        public string Ciudad { get; private set; }
-
-        private List<Movimiento> _movimientos;
-
-        public IReadOnlyCollection<Movimiento> Movimientos => _movimientos.AsReadOnly();
-
-        public CuentaAhorro(string numero, string nombre, string ciudad)
-        {
-            Numero = numero;
-            Nombre = nombre;
-            Ciudad = ciudad;
-            _movimientos = new List<Movimiento>();
-        }
-
-        internal string Consignar(decimal valorConsignacion, DateTime fecha, string ciudad)
-        {
-            if (valorConsignacion < 0)
-            {
-                return "El valor a consignar es incorrecto";
-            }
-            if (!_movimientos.Any() && valorConsignacion >= 50000 && Ciudad.Equals(ciudad))
-            {
-                _movimientos.Add(new Movimiento(cuentaAhorro: this, fecha: fecha, tipo: "CONSIGNACION", valor: valorConsignacion));
-                Saldo += valorConsignacion;
-
-                return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
-            }
-            if (!_movimientos.Any() && valorConsignacion < 50000 && Ciudad.Equals(ciudad)) {
-                return "El valor mínimo de la primera consignación debe ser de $50.000 mil pesos. Su nuevo saldo es $0 pesos";
-            }
-            if (_movimientos.Any() && Ciudad.Equals(ciudad))
-            {
-                
-                _movimientos.Add(new Movimiento(cuentaAhorro: this, fecha: fecha, tipo: "CONSIGNACION", valor: valorConsignacion));
-                Saldo += valorConsignacion;
-                return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
-            }
-            if (_movimientos.Any() && !Ciudad.Equals(ciudad))
-            {
-                decimal costoNacional = 10000;
-               
-                _movimientos.Add(new Movimiento(cuentaAhorro: this, fecha: fecha, tipo: "CONSIGNACION", valor: valorConsignacion));
-                Saldo += (valorConsignacion-costoNacional);
-                return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
-            }
-            throw new NotImplementedException();
-        }
-        internal string Retirar(decimal valorRetirar, DateTime fecha, string ciudad)
-        {
-            if (valorRetirar < 0)
-            {
-                return "El valor a retirar es incorrecto";
-            }
-           
-                _movimientos.Add(new Movimiento(cuentaAhorro: this, fecha: fecha, tipo: "RETIRO", valor: valorRetirar));
-                Saldo -= valorRetirar;
-                return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
-
-        }
-    }
-
-    internal class Movimiento
-    {
-        public Movimiento(CuentaAhorro cuentaAhorro, DateTime fecha, string tipo, decimal valor)
-        {
-            CuentaAhorro = cuentaAhorro;
-            Fecha = fecha;
-            Tipo = tipo;
-            Valor = valor;
-        }
-
-        public CuentaAhorro CuentaAhorro { get; private set; }
-        public DateTime Fecha { get; private set; }
-        public string Tipo { get; private set; }
-        public decimal Valor { get; private set; }
-      
-    }
+  
 
 }
