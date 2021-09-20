@@ -84,7 +84,7 @@ namespace BancoTDD.Dominio
 
             for (int i = 0; i < movimiento.LongCount(); i++)
             {
-                if (movimiento[i].Fecha.Year == fecha.Year && movimiento[i].Fecha.Month == fecha.Month)
+                if (movimiento[i].Fecha.Year == fecha.Year && movimiento[i].Fecha.Month == fecha.Month && movimiento[i].Tipo.Equals("RETIRO"))
                     cont++;
             }
             return cont;
