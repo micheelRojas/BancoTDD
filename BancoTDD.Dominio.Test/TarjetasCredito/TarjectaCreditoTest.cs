@@ -167,7 +167,7 @@ namespace BancoTDD.Dominio.Test.TarjetasCredito
                 return "El Valor a consignar o abonar no puede ser menor a cero $0";
             }
             if (valorConsignacion <= Saldo) {
-                _movimientos.Add(new Movimiento(tarjertaCredito: this, fecha: fecha, tipo: "RETIRO", valor: valorConsignacion));
+                _movimientos.Add(new Movimiento(tarjertaCredito: this, fecha: fecha, tipo: "CONSIGNACION", valor: valorConsignacion));
                 Cupo += valorConsignacion;
                 Saldo -= valorConsignacion;
                 return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c y su cupo es de {Cupo:c2} pesos m/c";
