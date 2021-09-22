@@ -62,13 +62,14 @@ namespace BancoTDD.Dominio
                 return "El Saldo de la cuenta es inferior a $20.000,00 m/c";
 
             }
-            if (SaldoTemporal >= 20000 && Saldo > valorRetirar && CantidaMovientosMes(this._movimientos, fecha) <= 3)
+            
+            if (SaldoTemporal >= 20000 && Saldo > valorRetirar && CantidaMovientosMes(this._movimientos, fecha) < 3)
             {
                 _movimientos.Add(new Movimiento(cuentaBancaria: this, fecha: fecha, tipo: "RETIRO", valor: valorRetirar));
                 Saldo -= valorRetirar;
                 return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
             }
-            if (SaldoTemporal >= 20000 && Saldo > valorRetirar + 5000 && CantidaMovientosMes(this._movimientos, fecha) > 3)
+            if (SaldoTemporal >= 25000 && CantidaMovientosMes(this._movimientos, fecha) >= 3)
             {
                 _movimientos.Add(new Movimiento(cuentaBancaria: this, fecha: fecha, tipo: "RETIRO", valor: valorRetirar));
                 Saldo -= (valorRetirar + 5000);

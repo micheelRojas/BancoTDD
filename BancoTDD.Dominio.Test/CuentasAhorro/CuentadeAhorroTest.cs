@@ -149,6 +149,7 @@ namespace BancoTDD.Dominio.Test.CuentasAhorro
             Entonces El sistema registrará el retiro restando el valor del retiro al saldo.
             AND presentará el mensaje. “Su Nuevo Saldo es de $30.000,00 pesos m/c”.
          */
+        
         [Test]
         public void PuedeHacerRetiroCorrecto()
         {
@@ -165,23 +166,23 @@ namespace BancoTDD.Dominio.Test.CuentasAhorro
         *        Criterio de Aceptación:
         *        2.1 El valor a retirar se debe descontar del saldo de la cuenta.
                  2.2 El saldo mínimo de la cuenta deberá ser de 20 mil pesos.
-           Dado El cliente tiene una cuenta de ahorro con un saldo de 19.950 perteneciente a una
+           Dado El cliente tiene una cuenta de ahorro con un saldo de 50,000 perteneciente a una
            sucursal de la ciudad de Bogotá y se realiza un retiro.
-           Cuando Va a retirat  el valor de $19.000,00 pesos.
+           Cuando Va a retirat  el valor de $30.050,00 pesos.
            Entonces El sistema  no registrará el retiro.
            AND presentará el mensaje. “El Saldo de la cuenta es inferior a $20.000,00 m/c”.
         */
+        
         [Test]
         public void PuedeHacerRetiroInCorrecto()
         {
             var cuentaAhorro = new CuentaAhorro(numero: "10001", nombre: "Cuenta Ejemplo", ciudad: "Bogota");
             cuentaAhorro.Consignar(valorConsignacion: 50000, fecha: new DateTime(2019, 2, 1), ciudad: "Bogota");
-            cuentaAhorro.Retirar(valorRetirar: 30050, fecha: new DateTime(2019, 2, 1));
-
-            decimal valorRetirar = 19000;
+            
+            decimal valorRetirar = 30050;
             string respuesta = cuentaAhorro.Retirar(valorRetirar: valorRetirar, fecha: new DateTime(2019, 2, 1));
 
-            Assert.AreEqual(2, cuentaAhorro.Movimientos.Count);//Criterio general
+            Assert.AreEqual(1, cuentaAhorro.Movimientos.Count);//Criterio general
             Assert.AreEqual("El Saldo de la cuenta es inferior a $20.000,00 m/c", respuesta);
         }
 
