@@ -51,9 +51,9 @@ namespace BancoTDD.Dominio.Test.CDTs
 
         /*
          *  Dado El cliente tiene una tarjeta de CDT a termino trimestral con un saldo de 1 millon de pesos 
-         Cuando va a reirar $1.000.050,00 pesos pasado los 3 meses .
+         Cuando va a reirar $1.014.673,85 pesos pasado los 3 meses .
          Entonces El sistema registrará el retiro se le liquidará un interés de acuerdo a la tasa definida de 3% y plazo de termino de trimestre.
-         AND presentará el mensaje. “Su Nuevo Saldo es de $ 1.014.673,84 pesos m/c"
+         AND presentará el mensaje. “Su Nuevo Saldo es de $ 0,00 pesos m/c"
          */
         [Test]
         public void PuedeRetirarCorrecta()
@@ -61,13 +61,31 @@ namespace BancoTDD.Dominio.Test.CDTs
             var cdt = new CDT(numero: "10001", nombre: "Cuenta Ejemplo", termino: "Trimestre", tasa: 0.06);
             decimal valorConsignacion = 1000000;
             cdt.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1));
-            
-            decimal valorRetirar= 1000000;
-            string respuesta = cdt.Retirar(valorRetiro: valorRetirar, fecha: new DateTime(2020, 5, 1));
-            
-            Assert.AreEqual("Su Nuevo Saldo es de $ 14.673,85 pesos m/c", respuesta);
-        }
 
+            double valorRetiro = 1014673.85;
+            string respuesta = cdt.Retirar(valorRetiro: Convert.ToDecimal(valorRetiro), fecha: new DateTime(2020, 5, 1));
+            
+            Assert.AreEqual("Su Nuevo Saldo es de $ 0,00 pesos m/c", respuesta);
+        }
+        //Solo puede retirar por el total del saldo: {SaldoTemporal:c2
+        /*
+         *  Dado El cliente tiene una tarjeta de CDT a termino trimestral con un saldo de 1 millon de pesos 
+         Cuando va a reirar $800.000,00 pesos pasado los 3 meses .
+         Entonces El sistema registrará el retiro se le liquidará un interés de acuerdo a la tasa definida de 3% y plazo de termino de trimestre.
+         AND presentará el mensaje. “Solo puede retirar por el total del saldo: $ 1,014,673.85 m/c"
+         */
+        [Test]
+        public void PuedeRetirarInCorrecta()
+        {
+            var cdt = new CDT(numero: "10001", nombre: "Cuenta Ejemplo", termino: "Trimestre", tasa: 0.06);
+            decimal valorConsignacion = 1000000;
+            cdt.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1));
+
+            double valorRetiro = 800000;
+            string respuesta = cdt.Retirar(valorRetiro: Convert.ToDecimal(valorRetiro), fecha: new DateTime(2020, 5, 1));
+
+            Assert.AreEqual("Solo puede retirar por el total del saldo: $ 1.014.673,85 pesos m/c", respuesta);
+        }
     }
 
     internal class CDT
@@ -106,15 +124,15 @@ namespace BancoTDD.Dominio.Test.CDTs
         }
         internal string Retirar(decimal valorRetiro, DateTime fecha)
         {
-            decimal SaldoTemporal= (Convert.ToDecimal(CalcularTermino(this.Termino, this.Tasa)) + 1) * Saldo;
-            if (DifenciaMeses(fecha, MovimientoAnteriorConsignacion(this._movimientos).Fecha) == this.Termino && valorRetiro<= SaldoTemporal && MovimientoAnteriorRetiro(this._movimientos) == null)
+            decimal SaldoTemporal = Math.Round(((Convert.ToDecimal(CalcularTermino(this.Termino, this.Tasa)) + 1) * Saldo),2);
+            if (DifenciaMeses(fecha, MovimientoAnteriorConsignacion(this._movimientos).Fecha) == this.Termino && valorRetiro.Equals( SaldoTemporal) && MovimientoAnteriorRetiro(this._movimientos) == null)
             {
                 _movimientos.Add(new Movimiento(cdt: this, fecha: fecha, tipo: "RETIRO", valor: valorRetiro));
                 Saldo = SaldoTemporal-valorRetiro;
                 return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
             }
+            return $"Solo puede retirar por el total del saldo: {SaldoTemporal:c2} pesos m/c";
 
-            throw new NotImplementedException();
         }
         internal static string DifenciaMeses(DateTime fechaFin, DateTime fechaInicio) {
             decimal diferencia = Math.Abs((fechaFin.Month - fechaInicio.Month) + 12 * (fechaFin.Year - fechaInicio.Year));

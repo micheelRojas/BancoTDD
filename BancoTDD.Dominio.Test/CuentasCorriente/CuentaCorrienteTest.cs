@@ -27,9 +27,9 @@ Criterios de Aceptación
              * CUANDO
              * ENTONCES
              */
-            var cuentaCorriente = new CuentaCorriente(numero: "10001", nombre: "Cuenta Ejemplo", ciudad:"Bogota", sobregiro: 1000000);
+            var cuentaCorriente = new CuentaCorriente(numero: "10001", nombre: "Cuenta Ejemplo", sobregiro: 1000000);
             decimal valorConsignacion = 90000;
-            string respuesta = cuentaCorriente.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1),ciudad:"Bogota");
+            string respuesta = cuentaCorriente.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1));
             Assert.AreEqual(0, cuentaCorriente.Movimientos.Count);//Criterio general
             Assert.AreEqual("El valor a consignar es incorrecto", respuesta);
         }
@@ -46,7 +46,7 @@ Criterios de Aceptación
         {
 
             #region DADO EL CLIENTE TIENE UNA CUENTA CORRIENTE CON UN SOBREGIRO PERMITIDO DE 1.000.000
-            var cuentaCorriente = new CuentaCorriente(numero: "10001", nombre: "Cuenta Ejemplo", ciudad: "Bogota", sobregiro: 1000000 );
+            var cuentaCorriente = new CuentaCorriente(numero: "10001", nombre: "Cuenta Ejemplo", sobregiro: 1000000 );
             #endregion
             #region CUANDO retire 100.000 pesos
             decimal valorRetiro = 100000;

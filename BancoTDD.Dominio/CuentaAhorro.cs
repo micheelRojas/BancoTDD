@@ -7,13 +7,14 @@ namespace BancoTDD.Dominio
 {
     public class CuentaAhorro:CuentaBancariaBase
     {
-        public CuentaAhorro(string numero, string nombre, string ciudad) : base(numero, nombre,ciudad)
+        public string Ciudad { get; private set; }
+        public CuentaAhorro(string numero, string nombre, string ciudad) : base(numero, nombre)
         {
-
+            Ciudad = ciudad;
         }
 
       
-        public override string Consignar(decimal valorConsignacion, DateTime fecha, string ciudad)
+        public  string Consignar(decimal valorConsignacion, DateTime fecha, string ciudad)
         {
             if (valorConsignacion < 0)
             {
@@ -55,18 +56,19 @@ namespace BancoTDD.Dominio
             {
                 return "El valor a retirar es incorrecto";
             }
-            if (Saldo < 20000)
+            decimal SaldoTemporal = Saldo - valorRetirar;
+            if (SaldoTemporal < 20000)
             {
                 return "El Saldo de la cuenta es inferior a $20.000,00 m/c";
 
             }
-            if (Saldo >= 20000 && Saldo > valorRetirar && CantidaMovientosMes(this._movimientos, fecha) <= 3)
+            if (SaldoTemporal >= 20000 && Saldo > valorRetirar && CantidaMovientosMes(this._movimientos, fecha) <= 3)
             {
                 _movimientos.Add(new Movimiento(cuentaBancaria: this, fecha: fecha, tipo: "RETIRO", valor: valorRetirar));
                 Saldo -= valorRetirar;
                 return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
             }
-            if (Saldo >= 20000 && Saldo > valorRetirar + 5000 && CantidaMovientosMes(this._movimientos, fecha) > 3)
+            if (SaldoTemporal >= 20000 && Saldo > valorRetirar + 5000 && CantidaMovientosMes(this._movimientos, fecha) > 3)
             {
                 _movimientos.Add(new Movimiento(cuentaBancaria: this, fecha: fecha, tipo: "RETIRO", valor: valorRetirar));
                 Saldo -= (valorRetirar + 5000);

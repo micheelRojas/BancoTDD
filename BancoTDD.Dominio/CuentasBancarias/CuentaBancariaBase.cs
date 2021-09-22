@@ -12,17 +12,17 @@ namespace BancoTDD.Dominio.CuentasBancarias
         public string Numero { get; private set; }
         public string Nombre { get; private set; }
         public decimal Saldo { get; protected set; }
-        public string Ciudad { get; private set; }
-        public CuentaBancariaBase(string numero, string nombre, string ciudad)
+        
+        public CuentaBancariaBase(string numero, string nombre)
         {
             Numero = numero;
             Nombre = nombre;
-            Ciudad = ciudad;
+           
             _movimientos = new List<Movimiento>();
         }
         public IReadOnlyCollection<Movimiento> Movimientos => _movimientos.AsReadOnly();
 
-        public virtual string Consignar(decimal valorConsignacion, DateTime fecha, string ciudad)
+        public virtual string Consignar(decimal valorConsignacion, DateTime fecha)
         {
             if (!_movimientos.Any() && valorConsignacion < 100000)
             {
