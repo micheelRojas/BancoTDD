@@ -11,7 +11,7 @@ namespace BancoTDD.Dominio
 
         public string Termino { get; protected set; }
         public double Tasa { get; protected set; }
-        public CDT(string numero, string nombre, string termino, double tasa) : base(numero, nombre)
+        public CDT(string numero, string nombre, string termino, double tasa) : base(numero, nombre, 1000000)
         {
             Termino = termino;
             Tasa = tasa;
@@ -27,11 +27,9 @@ namespace BancoTDD.Dominio
             }
             if (!_movimientos.Any() || MovimientoAnteriorConsignacion(this._movimientos) == null)
             {
-                _movimientos.Add(new Movimiento(cuentaBancaria: this, fecha: fecha, tipo: "CONSIGNACION", valor: valorConsignacion));
-                Saldo += valorConsignacion;
+                AddMovimientoAumenteSaldo(valorConsignacion, fecha, "CONSIGNACION");
                 return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
             }
-
 
             throw new NotImplementedException();
         }
@@ -40,8 +38,8 @@ namespace BancoTDD.Dominio
             decimal SaldoTemporal = Math.Round(((Convert.ToDecimal(CalcularTermino(this.Termino, this.Tasa)) + 1) * Saldo), 2);
             if (DifenciaMeses(fecha, MovimientoAnteriorConsignacion(this._movimientos).Fecha) == this.Termino && valorRetiro.Equals(SaldoTemporal) && MovimientoAnteriorRetiro(this._movimientos) == null)
             {
-                _movimientos.Add(new Movimiento(cuentaBancaria: this, fecha: fecha, tipo: "RETIRO", valor: valorRetiro));
-                Saldo = SaldoTemporal - valorRetiro;
+                AddMovimientoAumenteSaldo((SaldoTemporal-Saldo), fecha, "INTERESES");
+                AddMovimientoDisminuyeSaldo(valorRetiro, fecha, "RETIRO");
                 return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
             }
             return $"Solo puede retirar por el total del saldo: {SaldoTemporal:c2} pesos m/c";

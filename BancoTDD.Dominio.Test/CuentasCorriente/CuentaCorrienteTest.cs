@@ -53,7 +53,7 @@ Criterios de Aceptación
             string respuesta = cuentaCorriente.Retirar(valorRetiro: valorRetiro, fecha: new DateTime(2020, 2, 1));
             #endregion
             #region ENTONCES el sistema descontará el 4xmil de la transacción Y el saldo de la cuenta será de 
-            Assert.AreEqual(0, cuentaCorriente.Movimientos.Count);//Criterio general
+            Assert.AreEqual(2, cuentaCorriente.Movimientos.Count);//Criterio general
             Assert.AreEqual(-100400, cuentaCorriente.Saldo);
             Assert.AreEqual("Su Nuevo Saldo es de -$ 100.400,00 pesos m/c", respuesta);
             #endregion

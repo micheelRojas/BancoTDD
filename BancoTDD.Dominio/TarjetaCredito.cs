@@ -12,7 +12,7 @@ namespace BancoTDD.Dominio
         
         public decimal Cupo { get; protected set; }
        
-        public TarjectaCredito(string numero, string nombre, decimal cupo) : base(numero, nombre)
+        public TarjectaCredito(string numero, string nombre, decimal cupo) : base(numero, nombre,Convert.ToDecimal( 0.1))
         {
            
             Cupo = cupo;
@@ -27,9 +27,9 @@ namespace BancoTDD.Dominio
             }
             if (valorConsignacion <= Saldo)
             {
-                _movimientos.Add(new Movimiento(cuentaBancaria: this, fecha: fecha, tipo: "CONSIGNACION", valor: valorConsignacion));
+                
+                AddMovimientoDisminuyeSaldo(valorConsignacion, fecha, "CONSIGNACION");
                 Cupo += valorConsignacion;
-                Saldo -= valorConsignacion;
                 return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c y su cupo es de {Cupo:c2} pesos m/c";
             }
             if (valorConsignacion > Saldo)
@@ -46,9 +46,8 @@ namespace BancoTDD.Dominio
             }
             if (valorRetirar <= Cupo)
             {
-                _movimientos.Add(new Movimiento(cuentaBancaria: this, fecha: fecha, tipo: "RETIRO", valor: valorRetirar));
+                AddMovimientoAumenteSaldo(valorRetirar, fecha, "RETIRO");
                 Cupo -= valorRetirar;
-                Saldo += valorRetirar;
                 return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c y su cupo es de {Cupo:c2} pesos m/c";
             }
             if (valorRetirar > Cupo)
@@ -58,5 +57,7 @@ namespace BancoTDD.Dominio
             throw new NotImplementedException();
 
         }
+       
+
     }
 }

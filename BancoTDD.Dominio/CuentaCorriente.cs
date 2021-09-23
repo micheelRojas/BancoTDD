@@ -11,17 +11,19 @@ namespace BancoTDD.Dominio
     {
         public decimal Sobregiro { get; private set; }
 
-        public CuentaCorriente(string numero, string nombre, decimal sobregiro) : base(numero, nombre)
+        public CuentaCorriente(string numero, string nombre, decimal sobregiro) : base(numero, nombre, 100000)
         {
             Sobregiro = -sobregiro;
         }
 
         public override string Retirar(decimal valorRetiro, DateTime fecha)
         {
-            var nuevoSaldoTemporal = Saldo - valorRetiro - valorRetiro * 4 / 1000;
+            var cuatroPorMil = valorRetiro * 4 / 1000;
+            var nuevoSaldoTemporal = Saldo - valorRetiro - cuatroPorMil;
             if (nuevoSaldoTemporal > Sobregiro)
             {
-                Saldo = nuevoSaldoTemporal;
+                AddMovimientoDisminuyeSaldo(valorRetiro, fecha, "RETIRO");
+                AddMovimientoDisminuyeSaldo(cuatroPorMil, fecha, "IMP4XMIL");
                 return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
             }
             throw new NotImplementedException();

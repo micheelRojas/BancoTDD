@@ -124,7 +124,7 @@ namespace BancoTDD.Dominio.Test.CuentasAhorro
             decimal valorConsignacion = 49950;
             string respuesta = cuentaAhorro.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1), ciudad: "Valledupar");
            
-            Assert.AreEqual(3, cuentaAhorro.Movimientos.Count);//Criterio general
+            Assert.AreEqual(4, cuentaAhorro.Movimientos.Count);//Criterio general
             Assert.AreEqual("Su Nuevo Saldo es de $ 69.950,00 pesos m/c", respuesta);
         }
         /*
@@ -209,7 +209,7 @@ namespace BancoTDD.Dominio.Test.CuentasAhorro
             decimal valorRetirar = 20000;
             string respuesta = cuentaAhorro.Retirar(valorRetirar: valorRetirar, fecha: new DateTime(2019, 2, 1));
 
-            Assert.AreEqual(5, cuentaAhorro.Movimientos.Count);//Criterio general
+            Assert.AreEqual(6, cuentaAhorro.Movimientos.Count);//Criterio general
             Assert.AreEqual("Su Nuevo Saldo es de $ 25.000,00 pesos m/c", respuesta);
         }
 

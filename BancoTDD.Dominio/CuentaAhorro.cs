@@ -8,12 +8,11 @@ namespace BancoTDD.Dominio
     public class CuentaAhorro:CuentaBancariaBase
     {
         public string Ciudad { get; private set; }
-        public CuentaAhorro(string numero, string nombre, string ciudad) : base(numero, nombre)
+        public CuentaAhorro(string numero, string nombre, string ciudad) : base(numero, nombre,50000)
         {
             Ciudad = ciudad;
         }
-
-      
+        
         public  string Consignar(decimal valorConsignacion, DateTime fecha, string ciudad)
         {
             if (valorConsignacion < 0)
@@ -33,17 +32,14 @@ namespace BancoTDD.Dominio
             }
             if (_movimientos.Any() && Ciudad.Equals(ciudad))
             {
-
-                _movimientos.Add(new Movimiento(cuentaBancaria: this, fecha: fecha, tipo: "CONSIGNACION", valor: valorConsignacion));
-                Saldo += valorConsignacion;
+                AddMovimientoAumenteSaldo(valorConsignacion, fecha, "CONSIGNACION");
                 return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
             }
             if (_movimientos.Any() && !Ciudad.Equals(ciudad))
             {
                 decimal costoNacional = 10000;
-
-                _movimientos.Add(new Movimiento(cuentaBancaria: this, fecha: fecha, tipo: "CONSIGNACION", valor: valorConsignacion));
-                Saldo += (valorConsignacion - costoNacional);
+                AddMovimientoAumenteSaldo(valorConsignacion, fecha, "CONSIGNACION");
+                AddMovimientoDisminuyeSaldo(costoNacional, fecha, "COSTOCONSIGNACION");
                 return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
             }
             throw new NotImplementedException();
@@ -65,14 +61,14 @@ namespace BancoTDD.Dominio
             
             if (SaldoTemporal >= 20000 && Saldo > valorRetirar && CantidaMovientosMes(this._movimientos, fecha) < 3)
             {
-                _movimientos.Add(new Movimiento(cuentaBancaria: this, fecha: fecha, tipo: "RETIRO", valor: valorRetirar));
-                Saldo -= valorRetirar;
+                AddMovimientoDisminuyeSaldo(valorRetirar, fecha, "RETIRO");
+                
                 return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
             }
             if (SaldoTemporal >= 25000 && CantidaMovientosMes(this._movimientos, fecha) >= 3)
             {
-                _movimientos.Add(new Movimiento(cuentaBancaria: this, fecha: fecha, tipo: "RETIRO", valor: valorRetirar));
-                Saldo -= (valorRetirar + 5000);
+                AddMovimientoDisminuyeSaldo(valorRetirar, fecha, "RETIRO");
+                AddMovimientoDisminuyeSaldo(5000, fecha, "COSTORETIRO");
                 return $"Su Nuevo Saldo es de {Saldo:c2} pesos m/c";
 
             }
