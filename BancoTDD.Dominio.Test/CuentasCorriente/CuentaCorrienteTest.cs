@@ -33,6 +33,32 @@ Criterios de Aceptación
             Assert.AreEqual(0, cuentaCorriente.Movimientos.Count);//Criterio general
             Assert.AreEqual("El valor a consignar es incorrecto", respuesta);
         }
+        /*
+         *HU 3. 
+         *Como Usuario quiero realizar consignaciones a una cuenta corriente para salvaguardar el dinero.
+         *Criterios de Aceptación
+         *3.1 La consignación inicial debe ser de mínimo 100 mil pesos. 
+         *3.2 El valor consignado debe ser adicionado al saldo de la cuenta
+         */
+        [Test]
+        public void PuedoHacerConsignacionInicialDeCienMilPesosCorrecta()
+        {
+            #region DADO que el cliente tiene una nueva cuenta corriente
+            var cuentaCorriente = new CuentaCorriente(numero: "10001", nombre: "Cuenta Ejemplo", sobregiro: 1000000);
+            #endregion
+
+            #region CUANDO consigne inicialmente 100.000 pesos 
+            decimal valorConsignacion = 100000;
+            string respuesta = cuentaCorriente.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1));
+            #endregion
+
+            #region ENTONCES  El sistema presentará el mensaje. “Su Nuevo Saldo es de $ 100.000,00 pesos m/c”
+            Assert.AreEqual(1, cuentaCorriente.Movimientos.Count);//Criterio general
+            Assert.AreEqual("Su Nuevo Saldo es de $ 100.000,00 pesos m/c", respuesta);
+            #endregion
+
+
+        }
 
         /// <summary>
         /// HU 4. Como Usuario quiero realizar retiros a una cuenta corriente para salvaguardar el dinero.

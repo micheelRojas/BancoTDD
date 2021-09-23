@@ -172,7 +172,36 @@ namespace BancoTDD.Dominio.Test.CuentasAhorro
            Entonces El sistema  no registrará el retiro.
            AND presentará el mensaje. “El Saldo de la cuenta es inferior a $20.000,00 m/c”.
         */
-        
+        /*
+         * HU 2. 
+         *Como Usuario quiero realizar retiros a una cuenta de ahorro para obtener el dinero en efectivo
+         *Criterios de Aceptación
+         *2.1 El valor a retirar se debe descontar del saldo de la cuenta.
+         *2.2 El saldo mínimo de la cuenta deberá ser de 20 mil pesos. 
+         */
+        [Test]
+        public void PuedeHacerRetiroTreintaMilPesosCorrecto()
+        {
+            #region DADO que el cliente tiene una cuenta de ahorro con un saldo de 50.001 pesos 
+            var cuentaAhorro = new CuentaAhorro(numero: "10001", nombre: "Cuenta Ejemplo",ciudad: "Bogota");
+            decimal valorConsignacion = 50001;
+            string respuesta = cuentaAhorro.Consignar(valorConsignacion: valorConsignacion, fecha: new DateTime(2020, 2, 1));
+            #endregion
+
+            #region CUANDO efectue un retiro de 30.000 pesos
+            decimal valorRetiro = 30000;
+            string respuestaRetiro = cuentaAhorro.Retirar(valorRetirar: valorRetiro, fecha: new DateTime(2020, 2, 1));
+            #endregion
+
+            #region ENTONCES El sistema presentará el mensaje. “Su Nuevo Saldo es de $ 20.001,00 pesos m/c” 
+            var movimientoRetiro = cuentaAhorro.Movimientos.FirstOrDefault(t => t.Tipo == "RETIRO");
+            Assert.AreEqual(movimientoRetiro.Valor, 30000);
+            Assert.AreEqual("Su Nuevo Saldo es de $ 20.001,00 pesos m/c", respuestaRetiro);
+            #endregion
+
+
+        }
+
         [Test]
         public void PuedeHacerRetiroInCorrecto()
         {
