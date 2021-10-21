@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace BancoTDD.Dominio
 {
-    public class CuentaAhorro:CuentaBancariaBase
+    public class CuentaAhorro:CuentaBancaria
     {
         public string Ciudad { get; private set; }
         public CuentaAhorro(string numero, string nombre, string ciudad) : base(numero, nombre,50000)

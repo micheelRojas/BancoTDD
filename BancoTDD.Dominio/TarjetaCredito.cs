@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BancoTDD.Dominio
 {
-    public class TarjectaCredito:CuentaBancariaBase
+    public class TarjectaCredito:CuentaBancaria
     {
         
         public decimal Cupo { get; protected set; }

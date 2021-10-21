@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace BancoTDD.Dominio
 {
-    public class CDT : CuentaBancariaBase
+    public class CDT : CuentaBancaria
     {
 
 

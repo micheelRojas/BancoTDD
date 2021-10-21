@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 
 namespace BancoTDD.Dominio.CuentasBancarias
 {
-  public abstract class CuentaBancariaBase
+  public abstract class CuentaBancaria
     {
+        public int Id { get; private set; }
         protected List<Movimiento> _movimientos;
         public string Numero { get; private set; }
         public string Nombre { get; private set; }
         public decimal Saldo { get; protected set; }
         protected decimal ValorMinimoConsignacionInicial;
-        public CuentaBancariaBase(string numero, string nombre, decimal valorMinimoConsignacionInicial)
+        public CuentaBancaria(string numero, string nombre, decimal valorMinimoConsignacionInicial)
         {
             Numero = numero;
             Nombre = nombre;

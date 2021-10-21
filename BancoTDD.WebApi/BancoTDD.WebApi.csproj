@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -15,6 +15,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BancoTDD.Aplication\BancoTDD.Aplication.csproj" />
+    <ProjectReference Include="..\BancoTDD.Dominio\BancoTDD.Dominio.csproj" />
+    <ProjectReference Include="..\BancoTDD.Infraestrutura\BancoTDD.Infraestrutura.csproj" />
   </ItemGroup>
 
 </Project>

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BancoTDD.Dominio
 {
-    public class CuentaCorriente : CuentaBancariaBase
+    public class CuentaCorriente : CuentaBancaria
     {
         public decimal Sobregiro { get; private set; }
 
